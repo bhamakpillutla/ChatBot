@@ -1,124 +1,56 @@
-A chatbot is a software application used to conduct an on-line chat conversation via text or text-to-speech, in lieu of providing direct contact with a live human agent.[1] Designed to convincingly simulate the way a human would behave as a conversational partner, chatbot systems typically require continuous tuning and testing, and many in production remain unable to adequately converse or pass the industry standard Turing test.[2] The term "ChatterBot" was originally coined by Michael Mauldin (creator of the first Verbot) in 1994 to describe these conversational programs.[3]
+Chatbots, also called Conversational Agents or Dialog Systems, are a hot topic. Microsoft is making big bets on chatbots, and so are companies like Facebook (M), Apple (Siri), Google, WeChat, and Slack. There is a new wave of startups trying to change how consumers interact with services by building consumer apps like Operator or x.ai, bot platforms like Chatfuel, and bot libraries like Howdy’s Botkit. Microsoft recently released their own bot developer framework.
 
-Chatbots are typically used in dialog systems for various purposes including customer service, request routing, or for information gathering. While some chatbot applications use extensive word-classification processes, Natural Language processors, and sophisticated AI, others simply scan for general keywords and generate responses using common phrases obtained from an associated library or database.
+Many companies are hoping to develop bots to have natural conversations indistinguishable from human ones, and many are claiming to be using NLP and Deep Learning techniques to make this possible. But with all the hype around AI it’s sometimes difficult to tell fact from fiction.
 
-Today, most chatbots are accessed on-line via website popups, or through virtual assistants such as Google Assistant, Amazon Alexa, or messaging apps such as Facebook Messenger or WeChat.[4][5] Chatbots are typically classified into usage categories that include: commerce (e-commerce via chat), education, entertainment, finance, health, news, and productivity.[6]
+In this series I want to go over some of the Deep Learning techniques that are used to build conversational agents, starting off by explaining where we are right now, what’s possible, and what will stay nearly impossible for at least a little while. This post will serve as an introduction, and we’ll get into the implementation details in upcoming posts.
 
 
-Contents
-1	Background
-2	Development
-3	Application
-3.1	Messaging apps
-3.1.1	As part of company apps and websites
-3.1.2	Chatbot sequences
-3.2	Company internal platforms
-3.3	Customer Service
-3.4	Healthcare
-3.5	Politics
-3.6	Toys
-4	Malicious use
-5	Limitations of Chatbots
-6	Chatbots and jobs
-7	See also
-8	References
-8.1	Further reading
-Background
-In 1950, Alan Turing's famous article "Computing Machinery and Intelligence" was published,[7] which proposed what is now called the Turing test as a criterion of intelligence. This criterion depends on the ability of a computer program to impersonate a human in a real-time written conversation with a human judge to the extent that the judge is unable to distinguish reliably—on the basis of the conversational content alone—between the program and a real human. The notoriety of Turing's proposed test stimulated great interest in Joseph Weizenbaum's program ELIZA, published in 1966, which seemed to be able to fool users into believing that they were conversing with a real human. However Weizenbaum himself did not claim that ELIZA was genuinely intelligent, and the introduction to his paper presented it more as a debunking exercise:
+A taxonomy of models
+Retrieval-Based vs. Generative Models
+Retrieval-based models (easier) use a repository of predefined responses and some kind of heuristic to pick an appropriate response based on the input and context. The heuristic could be as simple as a rule-based expression match, or as complex as an ensemble of Machine Learning classifiers. These systems don’t generate any new text, they just pick a response from a fixed set.
 
-[In] artificial intelligence ... machines are made to behave in wondrous ways, often sufficient to dazzle even the most experienced observer. But once a particular program is unmasked, once its inner workings are explained ... its magic crumbles away; it stands revealed as a mere collection of procedures ... The observer says to himself "I could have written that". With that thought, he moves the program in question from the shelf marked "intelligent", to that reserved for curios ... The object of this paper is to cause just such a re-evaluation of the program about to be "explained". Few programs ever needed it more.[8]
+Generative models (harder) don’t rely on pre-defined responses. They generate new responses from scratch. Generative models are typically based on Machine Translation techniques, but instead of translating from one language to another, we “translate” from an input to an output (response).
 
-ELIZA's key method of operation (copied by chatbot designers ever since) involves the recognition of clue words or phrases in the input, and the output of corresponding pre-prepared or pre-programmed responses that can move the conversation forward in an apparently meaningful way (e.g. by responding to any input that contains the word 'MOTHER' with 'TELL ME MORE ABOUT YOUR FAMILY').[9] Thus an illusion of understanding is generated, even though the processing involved has been merely superficial. ELIZA showed that such an illusion is surprisingly easy to generate because human judges are so ready to give the benefit of the doubt when conversational responses are capable of being interpreted as "intelligent".
+Neural Conversational Model
 
-Interface designers have come to appreciate that humans' readiness to interpret computer output as genuinely conversational—even when it is actually based on rather simple pattern-matching—can be exploited for useful purposes. Most people prefer to engage with programs that are human-like, and this gives chatbot-style techniques a potentially useful role in interactive systems that need to elicit information from users, as long as that information is relatively straightforward and falls into predictable categories. Thus, for example, online help systems can usefully employ chatbot techniques to identify the area of help that users require, potentially providing a "friendlier" interface than a more formal search or menu system. This sort of usage holds the prospect of moving chatbot technology from Weizenbaum's "shelf ... reserved for curios" to that marked "genuinely useful computational methods".
+Both approaches have some obvious pros and cons. Due to the repository of handcrafted responses, retrieval-based methods don’t make grammatical mistakes. However, they may be unable to handle unseen cases for which no appropriate predefined response exists. For the same reasons, these models can’t refer back to contextual entity information like names mentioned earlier in the conversation. Generative models are “smarter”. They can refer back to entities in the input and give the impression that you’re talking to a human. However, these models are hard to train, are quite likely to make grammatical mistakes (especially on longer sentences), and typically require huge amounts of training data.
 
-Development
-Among the most notable early chatbots are ELIZA (1966) and PARRY (1972).[10][11][12][13] More recent notable programs include A.L.I.C.E., Jabberwacky and D.U.D.E (Agence Nationale de la Recherche and CNRS 2006). While ELIZA and PARRY were used exclusively to simulate typed conversation, many chatbots now include other functional features, such as games and web searching abilities. In 1984, a book called The Policeman's Beard is Half Constructed was published, allegedly written by the chatbot Racter (though the program as released would not have been capable of doing so).[14]
+Deep Learning techniques can be used for both retrieval-based or generative models, but research seems to be moving into the generative direction. Deep Learning architectures like Sequence to Sequence are uniquely suited for generating text and researchers are hoping to make rapid progress in this area. However, we’re still at the early stages of building generative models that work reasonably well. Production systems are more likely to be retrieval-based for now.
 
-One pertinent field of AI research is natural language processing. Usually, weak AI fields employ specialized software or programming languages created specifically for the narrow function required. For example, A.L.I.C.E. uses a markup language called AIML, which is specific to its function as a conversational agent, and has since been adopted by various other developers of, so-called, Alicebots. Nevertheless, A.L.I.C.E. is still purely based on pattern matching techniques without any reasoning capabilities, the same technique ELIZA was using back in 1966. This is not strong AI, which would require sapience and logical reasoning abilities.
+Long vs. Short Conversations
+The longer the conversation the more difficult to automate it. On one side of the spectrum are Short-Text Conversations (easier) where the goal is to create a single response to a single input. For example, you may receive a specific question from a user and reply with an appropriate answer. Then there are long conversations (harder) where you go through multiple turns and need to keep track of what has been said. Customer support conversations are typically long conversational threads with multiple questions.
 
-Jabberwacky learns new responses and context based on real-time user interactions, rather than being driven from a static database. Some more recent chatbots also combine real-time learning with evolutionary algorithms that optimise their ability to communicate based on each conversation held. Still, there is currently no general purpose conversational artificial intelligence, and some software developers focus on the practical aspect, information retrieval.
+Open Domain vs. Closed Domain
+In an open domain (harder) setting the user can take the conversation anywhere. There isn’t necessarily have a well-defined goal or intention. Conversations on social media sites like Twitter and Reddit are typically open domain – they can go into all kinds of directions. The infinite number of topics and the fact that a certain amount of world knowledge is required to create reasonable responses makes this a hard problem.
 
-Chatbot competitions focus on the Turing test or more specific goals. Two such annual contests are the Loebner Prize and The Chatterbox Challenge (the latter has been offline since 2015, however, materials can still be found from web archives).[15]
+In a closed domain (easier) setting the space of possible inputs and outputs is somewhat limited because the system is trying to achieve a very specific goal. Technical Customer Support or Shopping Assistants are examples of closed domain problems. These systems don’t need to be able to talk about politics, they just need to fulfill their specific task as efficiently as possible. Sure, users can still take the conversation anywhere they want, but the system isn’t required to handle all these cases – and the users don’t expect it to.
 
-DBpedia created a chatbot during the GSoC of 2017.[16][17][18] and can communicate through Facebook Messenger. DBpedia started in 2007 and allows to extract structured content from the Wikipedia dataset, along with many other datasets. DBpedia is currently one of the biggest representatives of Linked Open Data (LOD).[19]
+Common Challenges
+There are some obvious and not-so-obvious challenges when building conversational agents most of which are active research areas.
 
-Application
-See also: Virtual assistant
+Incorporating Context
+To produce sensible responses systems may need to incorporate both linguistic context and physical context. In long dialogs people keep track of what has been said and what information has been exchanged. That’s an example of linguistic context. The most common approach is to embed the conversation into a vector, but doing that with long conversations is challenging. Experiments in Building End-To-End Dialogue Systems Using Generative Hierarchical Neural Network Models and Attention with Intention for a Neural Network Conversation Model both go into that direction. One may also need to incorporate other kinds of contextual data such as date/time, location, or information about a user.
 
-Aeromexico airline chatbot running on Facebook Messenger, March 2018
-Messaging apps
-Many companies' chatbots run on messaging apps or simply via SMS. They are used for B2C customer service, sales and marketing.[20]
+Coherent Personality
+When generating responses the agent should ideally produce consistent answers to semantically identical inputs. For example, you want to get the same reply to “How old are you?” and “What is your age?”. This may sound simple, but incorporating such fixed knowledge or “personality” into models is very much a research problem. Many systems learn to generate linguistic plausible responses, but they are not trained to generate semantically consistent ones. Usually that’s because they are trained on a lot of data from multiple different users. Models like that in A Persona-Based Neural Conversation Model are making first steps into the direction of explicitly modeling a personality.
 
-In 2016, Facebook Messenger allowed developers to place chatbots on their platform. There were 30,000 bots created for Messenger in the first six months, rising to 100,000 by September 2017.[21]
+Example of incoherent responses of Neural Conversational Model
 
-Since September 2017, this has also been as part of a pilot program on WhatsApp. Airlines KLM and Aeroméxico both announced their participation in the testing;[22][23][24][25] both airlines had previously launched customer services on the Facebook Messenger platform.
+Evaluation of Models
+The ideal way to evaluate a conversational agent is to measure whether or not it is fulfilling its task, e.g. solve a customer support problem, in a given conversation. But such labels are expensive to obtain because they require human judgment and evaluation. Sometimes there is no well-defined goal, as is the case with open-domain models. Common metrics such as BLEU that are used for Machine Translation and are based on text matching aren’t well suited because sensible responses can contain completely different words or phrases. In fact, in How NOT To Evaluate Your Dialogue System: An Empirical Study of Unsupervised Evaluation Metrics for Dialogue Response Generation researchers find that none of the commonly used metrics really correlate with human judgment.
 
-The bots usually appear as one of the user's contacts, but can sometimes act as participants in a group chat.
+Intention and Diversity
+A common problem with generative systems is that they tend to produce generic responses like “That’s great!” or “I don’t know” that work for a lot of input cases. Early versions of Google’s Smart Reply tended to respond with “I love you” to almost anything. That’s partly a result of how these systems are trained, both in terms of data and in terms of actual training objective/algorithm. Some researchers have tried to artificially promote diversity through various objective functions. However, humans typically produce responses that are specific to the input and carry an intention. Because generative systems (and particularly open-domain systems) aren’t trained to have specific intentions they lack this kind of diversity.
 
-Many banks, insurers, media companies, e-commerce companies, airlines, hotel chains, retailers, health care providers, government entities and restaurant chains have used chatbots to answer simple questions, increase customer engagement,[26] for promotion, and to offer additional ways to order from them.[27][28]
+How well does it actually work?
+Given all the cutting edge research right now, where are we and how well do these systems actually work? Let’s consider our taxonomy again. A retrieval-based open domain system is obviously impossible because you can never handcraft enough responses to cover all cases. A generative open-domain system is almost Artificial General Intelligence (AGI) because it needs to handle all possible scenarios. We’re very far away from that as well (but a lot of research is going on in that area).
 
-A 2017 study showed 4% of companies used chatbots.[29] According to a 2016 study, 80% of businesses said they intended to have one by 2020.[30]
+This leaves us with problems in restricted domains where both generative and retrieval based methods are appropriate. The longer the conversations and the more important the context, the more difficult the problem becomes.
 
-As part of company apps and websites
-Previous generations of chatbots were present on company websites, e.g. Ask Jenn from Alaska Airlines which debuted in 2008[31] or Expedia's virtual customer service agent which launched in 2011.[31][32] The newer generation of chatbots includes IBM Watson-powered "Rocky", introduced in February 2017 by the New York City-based e-commerce company Rare Carat to provide information to prospective diamond buyers.[33][34]
+In a recent interview, Andrew Ng, now chief scientist of Baidu, puts it well:
 
-Chatbot sequences
-Used by marketers to script sequences of messages, very similar to an Autoresponder sequence. Such sequences can be triggered by user opt-in or the use of keywords within user interactions. After a trigger occurs a sequence of messages is delivered until the next anticipated user response. Each user response is used in the decision tree to help the chatbot navigate the response sequences to deliver the correct response message.
+Most of the value of deep learning today is in narrow domains where you can get a lot of data. Here’s one example of something it cannot do: have a meaningful conversation. There are demos, and if you cherry-pick the conversation, it looks like it’s having a meaningful conversation, but if you actually try it yourself, it quickly goes off the rails.
 
-Company internal platforms
-Other companies explore ways they can use chatbots internally, for example for Customer Support, Human Resources, or even in Internet-of-Things (IoT) projects. Overstock.com, for one, has reportedly launched a chatbot named Mila to automate certain simple yet time-consuming processes when requesting for a sick leave.[35] Other large companies such as Lloyds Banking Group, Royal Bank of Scotland, Renault and Citroën are now using automated online assistants instead of call centres with humans to provide a first point of contact. A SaaS chatbot business ecosystem has been steadily growing since the F8 Conference when Facebook's Mark Zuckerberg unveiled that Messenger would allow chatbots into the app.[36] In large companies, like in hospitals and aviation organizations, IT architects are designing reference architectures for Intelligent Chatbots that are used to unlock and share knowledge and experience in the organization more efficiently, and reduce the errors in answers from expert service desks significantly.[37] These Intelligent Chatbots make use of all kinds of artificial intelligence like image moderation and natural language understanding (NLU), natural language generation (NLG), machine learning and deep learning.
+Many companies start off by outsourcing their conversations to human workers and promise that they can “automate” it once they’ve collected enough data. That’s likely to happen only if they are operating in a pretty narrow domain – like a chat interface to call an Uber for example. Anything that’s a bit more open domain (like sales emails) is beyond what we can currently do. However, we can also use these systems to assist human workers by proposing and correcting responses. That’s much more feasible.
 
-Customer Service
-Many high-tech banking organizations are looking to integrate automated AI-based solutions such as chatbots into their customer service in order to provide faster and cheaper assistance to their clients who are becoming increasingly comfortable with technology. In particular, chatbots can efficiently conduct a dialogue, usually replacing other communication tools such as email, phone, or SMS. In banking, their major application is related to quick customer service answering common requests, as well as transactional support.
-
-Several studies report significant reduction in the cost of customer services, expected to lead to billions of dollars of economic savings in the next 10 years.[38] In 2019, Gartner predicted that by 2021, 15% of all customer service interactions globally will be handled completely by AI.[39] A study by Juniper Research in 2019 estimates retail sales resulting from chatbot-based interactions will reach $112 billion by 2023.[40]
-
-Since 2016 when Facebook allowed businesses to deliver automated customer support, e-commerce guidance, content and interactive experiences through chatbots, a large variety of chatbots were developed for the Facebook Messenger platform.[41]
-
-In 2016, Russia-based Tochka Bank launched the world's first Facebook bot for a range of financial services, including a possibility of making payments.[42]
-
-In July 2016, Barclays Africa also launched a Facebook chatbot, making it the first bank to do so in Africa.[43]
-
-The France's third largest bank by total assets[44] Société Générale launched their chatbot called SoBot in March 2018. While 80% of users of the SoBot expressed their satisfaction after having tested it, Société Générale deputy director Bertrand Cozzarolo stated that it will never replace the expertise provided by a human advisor. [45]
-
-The advantages of using chatbots for customer interactions in banking include cost reduction, financial advice, and 24/7 support.[46][47]
-
-Healthcare
-See also: Artificial intelligence in healthcare
-Chatbots are also appearing in the healthcare industry.[48][49][50] A study suggested that physicians in the United States believed that chatbots would be most beneficial for scheduling doctor appointments, locating health clinics, or providing medication information.[51]
-
-Certain patient groups are still reluctant to use chatbots. A mixed-methods study showed that people are still hesitant to use chatbots for their healthcare due to poor understanding of the technological complexity, the lack of empathy and concerns about cyber-security.[52] The analysis showed that while 6% had heard of a health chatbot and 3% had experience of using it, 67% perceived themselves as likely to use one within 12 months. The majority of participants would use a health chatbot for seeking general health information (78%), booking a medical appointment (78%) and looking for local health services (80%). However, a health chatbot was perceived as less suitable for seeking results of medical tests and seeking specialist advice such as sexual health. The analysis of attitudinal variables showed that most participants reported their preference for discussing their health with doctors (73%) and having access to reliable and accurate health information (93%). While 80% were curious about new technologies that could improve their health, 66% reported only seeking a doctor when experiencing a health problem and 65% thought that a chatbot was a good idea. Interestingly, 30% reported dislike about talking to computers, 41% felt it would be strange to discuss health matters with a chatbot and about half were unsure if they could trust the advice given by a chatbot. Therefore, perceived trustworthiness, individual attitudes towards bots and dislike for talking to computers are the main barriers to health chatbots.
-
-During the COVID-19 pandemic, many chatbots were deployed to provide information to end users.[53]
-
-Politics
-See also: Government by algorithm § AI Politicians
-In New Zealand, the chatbot SAM -short for Semantic Analysis Machine-[54] (made by Nick Gerritsen of Touchtech[55]) has been developed. It is designed to share its political thoughts, for example on topics such as climate change, healthcare and education, etc. It talks to people through Facebook Messenger.[56][57][58][59]
-
-Toys
-Chatbots have also been incorporated into devices not primarily meant for computing, such as toys.[60]
-
-Hello Barbie is an Internet-connected version of the doll that uses a chatbot provided by the company ToyTalk,[61] which previously used the chatbot for a range of smartphone-based characters for children.[62] These characters' behaviors are constrained by a set of rules that in effect emulate a particular character and produce a storyline.[63]
-
-The My Friend Cayla doll was marketed as a line of 18-inch (46 cm) dolls which uses speech recognition technology in conjunction with an Android or iOS mobile app to recognize the child's speech and have a conversation. It, like the Hello Barbie doll, attracted controversy due to vulnerabilities with the doll's Bluetooth stack and its use of data collected from the child's speech.
-
-IBM's Watson computer has been used as the basis for chatbot-based educational toys for companies such as CogniToys[60] intended to interact with children for educational purposes.[64]
-
-Malicious use
-Malicious chatbots are frequently used to fill chat rooms with spam and advertisements, by mimicking human behavior and conversations or to entice people into revealing personal information, such as bank account numbers. They are commonly found on Yahoo! Messenger, Windows Live Messenger, AOL Instant Messenger and other instant messaging protocols. There has also been a published report of a chatbot used in a fake personal ad on a dating service's website.[65]
-
-Tay, an AI chatbot that learns from previous interaction, caused major controversy due to it being targeted by internet trolls on Twitter. The bot was exploited, and after 16 hours began to send extremely offensive Tweets to users. This suggests that although the bot learnt effectively from experience, adequate protection was not put in place to prevent misuse.[66]
-
-If a text-sending algorithm can pass itself off as a human instead of a chatbot, its message would be more credible. Therefore, human-seeming chatbots with well-crafted online identities could start scattering fake news that seem plausible, for instance making false claims during a presidential election. With enough chatbots, it might be even possible to achieve artificial social proof.[67][68]
-
-Limitations of Chatbots
-The creation and implementation of chatbots is still a developing area, heavily related to artificial intelligence and machine learning, so the provided solutions, while possessing obvious advantages, have some important limitations in terms of functionalities and use cases. However this is changing over time.
-
-The most common ones are listed below:[69]
-
-As the database, used for output generation, is fixed and limited, chatbots can fail while dealing with an unsaved query.[47]
-A chatbot's efficiency highly depends on language processing and is limited because of irregularities, such as accents and mistakes that can create an important barrier for international and multi-cultural organisations[70]
-Chatbots are unable to deal with multiple questions at the same time and so conversation opportunities are limited.[69]
-Chatbots require a large amount of conversational data to train.
-As it happens usually with technology-led changes in existing services, some consumers, more often than not from the old generation, are uncomfortable with chatbots due to their limited understanding, making it obvious that their requests are being dealt with by machines.[69]
+Grammatical mistakes in production systems are very costly and may drive away users. That’s why most systems are probably best off using retrieval-based methods that are free of grammatical errors and offensive responses. If companies can somehow get their hands on huge amounts of data then generative models become feasible – but they must be assisted by other techniques to prevent them from going off the rails like Microsoft’s Tay did.
